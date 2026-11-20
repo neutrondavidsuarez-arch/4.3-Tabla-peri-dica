@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BioLearning - Tema 3</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init({ publicKey: "3LjnpLaDboHWv0VPY" });
+        })();
+    </script>
+    <style>
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        .iframe-container { position: relative; width: 100%; height: 75vh; border-radius: 1.5rem; overflow: hidden; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
+        .nav-btn { transition: all 0.3s ease; border-bottom: 3px solid transparent; white-space: nowrap; }
+        .nav-btn:hover { transform: translateY(-2px); }
+        .nav-btn.active { border-color: #10b981; color: #10b981; }
+        @keyframes pulse-dot { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+        .dot-pulse { animation: pulse-dot 1.2s infinite; }
+        /* Estilos para imágenes dentro de preguntas */
+        .question-img { max-width: 100%; height: auto; border-radius: 0.5rem; margin: 0.5rem 0; }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans min-h-screen">
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex flex-col lg:flex-row justify-between items-center gap-4">
+                <div class="text-center lg:text-left">
+                    <h1 class="text-xl font-black text-emerald-600 tracking-tight">UNIDAD 3</h1>
+                    <p class="text-slate-500 font-bold text-xs uppercase">Tema 4.3: Tabla Periódica</p>
+                </div>
+               
+                <nav class="flex flex-wrap justify-center gap-1 md:gap-4">
+                    <button onclick="prepQuiz('deber', this)" class="nav-btn active px-3 py-2 font-bold text-slate-700 flex items-center gap-2">
+                        <span>🧪</span> Deber
+                    </button>
+                    <button onclick="prepQuiz('evaluacion', this)" class="nav-btn px-3 py-2 font-bold text-slate-700 flex items-center gap-2">
+                        <span>📝</span> Repaso
+                    </button>
+                    <button onclick="prepQuiz('extra', this)" class="nav-btn px-3 py-2 font-bold text-slate-700 flex items-center gap-2">
+                        <span>📚</span> Práctica
+                    </button>
+                    <button onclick="prepQuiz('evaluacion_final', this)" class="nav-btn px-3 py-2 font-bold text-slate-700 flex items-center gap-2">
+                        <span>📊</span> Evaluación
+                    </button>
+                    <button onclick="showSection('pdf', this)" class="nav-btn px-3 py-2 font-bold text-slate-700 flex items-center gap-2">
+                        <span>📋</span> Pizarra
+                    </button>
+                    <button onclick="showSection('video', this)" class="nav-btn px-3 py-2 font-bold text-slate-700 flex items-center gap-2">
+                        <span>🎥</span> Video
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+    <main id="app" class="max-w-5xl mx-auto p-6">
+    </main>
+    <script>
+        const DRIVE_PDF_URL = "https://drive.google.com/file/d/1agcJNJNgnuiCy7FN02lL5ZoXaer4pxbh/view?usp=sharing";
+        const DRIVE_VIDEO_URL = "https://drive.google.com/file/d/1XVK8GZixE4Qj0RJPZIBBxxutqHvnyJMy/view?usp=sharing";
+
+        // PRINCIPAL (Deber + Repaso) — 30 preguntas
+        const quizData = [
+          { question: 'Los elementos del grupo VIIA son conocidos por ser:', options: ['Altamente reactivos', 'Estables', 'Inertes', 'Semimetálicos'], answer: 'Altamente reactivos', explanation: 'Identificación de la familia del Grupo VIIA (Grupo 17 IUPAC): <br> Los elementos pertenecientes al Grupo VIIA de la tabla periódica tradicional (Grupo 17 según la convención IUPAC) son los halógenos: flúor ("F"), cloro ("Cl"), bromo ("Br"), yodo ("I"), astato ("At") y teneso ("Ts"). <br> Configuración electrónica y tendencia química: <br> Poseen una configuración electrónica de valencia ns<sup>2</sup> np<sup>5</sup>(7 electrones en su capa externa). <br> Presentan los valores de electronegatividad y afinidad electrónica más elevados de sus respectivos periodos, lo que les confiere una extrema avidez por captar un electrón adicional para completar el octeto (ns<sup>2</sup> np<sup>6</sup>). <br> Esta propiedad los convierte en agentes oxidantes potentes y en los no metales más altamente reactivos de la tabla periódica.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Los metales alcalinos se caracterizan por _______, es decir pierden electrones y forman iones positivos, mientras que los calcógenos se caracterizan por______, es decir ganar electrones y formar iones negativos.', options: ['Reducirse-oxidarse', 'Oxidarse-reducirse', 'Ionizarse-oxidarse', 'Ionizarse-reducirse'], answer: 'Oxidarse-reducirse', explanation: 'Establece la correlación exacta entre pérdida de electrones/formación de cationes (oxidación) y ganancia de electrones/formación de aniones (reducción).', multi: 'OFF', maxSelect: 1 },
+           { question: 'Complete: <br> Los ________________ presentan carácter metálico, reaccionan con el oxígeno para formar óxidos metálicos de fórmula MO y con el agua para formar hidróxidos de fórmula M(OH)<sub>2</sub>.', options: ['alcalinos', 'alcalinos térreos', 'gases nobles ', 'halógenos '], answer: 'alcalinos térreos', explanation: 'Los metales alcalinos térreos son los que presentan carácter metálico, reaccionan con el oxígeno para formar óxidos metálicos de fórmula MO y con el agua para formar hidróxidos de fórmula M(OH)<sub>2</sub>.', multi: 'OFF', maxSelect: 1 },
+           { question: 'El agua dura se caracteriza por tener sales de iones metálicos como el Mg<sup>+2</sup> y Ca<sup>+2</sup>. Este tipo de agua no presenta un riesgo para la salud, pero es inadecuada en el uso industrial, ya que, formaría incrustaciones en calderos y tuberías reduciendo su diámetro y como consecuencia se pierde presión. Respecto a los iones descritos y a sus átomos neutros, seleccione la alternativa correcta.', options: ['El radio del Mg<sup>+2</sup> es igual al del Mg.', 'El Ca presenta mayor radio atómico que el Mg.', 'El Ca presenta mayor afinidad electrónica que el Mg.', 'El radio del Mg<sup>+2</sup> es mayor al del Mg.'], answer: 'El Ca presenta mayor radio atómico que el Mg.', explanation: 'El calcio (Ca) tiene un mayor radio atómico que el magnesio (Mg) porque, en su estado neutro, posee más capas electrónicas. Al ionizarse, ambos pierden dos electrones, formando cationes Ca<sup>2+</sup> y Mg<sup>2+</sup>, pero como el calcio tenía originalmente un radio mayor, su ion sigue siendo más grande que el magnesio.', multi: 'OFF', maxSelect: 1 },
+           { question: 'El carbono, el hidrogeno y el oxígeno son los elementos más abundantes en la naturaleza, ya que están formando parte de la materia viva. Existen otros elementos como el nitrógeno y fósforo que conjuntamente con el carbono, hidrógeno y oxígeno forman parte de los ácidos nucléicos. Con respecto a los elementos mostrados en la tabla (use una tabla periódica para ubicar a los elementos), seleccione la proposición correcta. <br> <img src="https://drive.google.com/thumbnail?id=19wVwlz4093Dnmg7s-NTICN1EmyzQcqLHGxWOokELc30&sz=w800-h600"width="700" height="300" alt="Descripción">', options: ['El carbono presenta menor radio atómico que el oxígeno.', 'El fósforo presenta mayor energía de ionización que el nitrógeno.', 'La afinidad electrónica del hidrógeno es igual a la del oxígeno.', 'El oxígeno presenta mayor electronegatividad que el carbono. '], answer: 'El oxígeno presenta mayor electronegatividad que el carbono. ', explanation: 'El oxígeno presenta mayor electronegatividad que el carbono, lo cual es importante para entender su papel en la formación de compuestos orgánicos y biológicos.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Seleccione la alternativa correcta respecto a las zonas que representa la siguiente tabla periódica: <br> Zona W (Eu), Zona X (Ca), Zona Y (Fe) y Zona Z (S) <br> <img src="https://drive.google.com/thumbnail?id=12u7bPW11xVC9VkaOzfS5rnjE78seeTk2ZuT2VSXAsA8&sz=w800-h600"width="450" height="300" alt="Descripción">', options: ['A la zona Z pertenecen los elementos de transición interna.', 'Las zonas X, Z, Y, W, pertenecen a los elementos que contiene electrones en los subniveles s, p, d, f respectivamente.', 'Las zonas X y W pertenecen a los elementos representativos.', 'En la zona W podemos encontrar a los gases nobles. '], answer: 'Las zonas X, Z, Y, W, pertenecen a los elementos que contiene electrones en los subniveles s, p, d, f respectivamente.', explanation: 'Las zonas X, Y, Z y W pertenecen a los elementos que contienen electrones en los subniveles s, p, d y f respectivamente, lo que refleja su configuración electrónica.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Los números cuánticos del último electrón de un átomo son 2; 1; +1; +1/2.  Determine a que grupo y periodo pertenece el elemento químico.', options: ['VA y 2', 'VB y 2', 'IVA y 3', 'IIIB y 3'], answer: 'VA y 2', explanation: 'El elemento químico con números cuánticos del último electrón como 2; 1; +1; +1/2 pertenece al grupo VA y periodo 2, indicando su posición en la tabla periódica.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Determine la alternativa correcta respecto a los elementos Na (11), Al (13), P (15), S (16), Cl (17), Ca (20), I (53), Fr (87) <br> Nota: Pude ver la ubicación en una tabla periódica. <br> <img src="https://drive.google.com/thumbnail?id=1rsHd_r-BQYYTnNSXqSmMuxcrVdCIiA93syi5UC3-Nfc&sz=w800-h600"width="600" height="300" alt="Descripción">', options: ['El sodio presenta mayor radio atómico que el francio.', 'El yodo presenta mayor electronegatividad  que el cloro.', 'El sodio presenta mayor radio atómico que el cloro.', 'El aluminio presenta mayor energía de ionización que el azufre. '], answer: 'El sodio presenta mayor radio atómico que el cloro.', explanation: 'El sodio presenta mayor radio atómico que el cloro debido a su posición en la tabla periódica donde los metales generalmente tienen radios más grandes que los no metales.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Determine la alternativa correcta respecto a la tabla periódica.', options: ['Los halógenos o calcógenos pertenecen al grupo IA.', 'Los anfígenos pertenecen al grupo VIB.', 'Los metales alcalinos pertenecen al bloque d.', 'Los gases nobles son del grupo 18 en la Tabla Periódica Moderna.'], answer: 'Los gases nobles son del grupo 18 en la Tabla Periódica Moderna.', explanation: 'Los gases nobles son del grupo 18 en la Tabla Periódica Moderna; son conocidos por su estabilidad química y baja reactividad.', multi: 'OFF', maxSelect: 1 },
+           { question: 'El ión sodio Na<sup>+1</sup> presenta 10 electrones en su distribución electrónica. Determine al grupo que pertenece el átomo neutro de sodio. ', options: ['Alcalinos', 'Anfígenos', 'Halógenos', 'Alcalinotérreos'], answer: 'Alcalinos', explanation: 'El ion sodio Na<sup>+</sup> presenta 10 electrones en su distribución electrónica, indicando que el átomo neutro de sodio pertenece al grupo de los metales alcalinos.', multi: 'OFF', maxSelect: 1 },
+           { question: 'En la tabla periódica se puede encontrar a los metales y no metales. Los metales se caracterizan por ser buenos conductores del calor y la electricidad, mientras que los no metales se caracterizan por:', options: ['Oxidarse fácilmente, es decir pierden electrones con facilidad.', 'Ser dúctiles, maleables y reflejan la luz.', 'Estar en estado sólido, líquido y gaseoso, además son malos conductores de la electricidad.', 'Ser buenos conductores del calor.'], answer: 'Estar en estado sólido, líquido y gaseoso, además son malos conductores de la electricidad.', explanation: 'Los no metales se caracterizan por estar en estado sólido, líquido y gaseoso; además son malos conductores de la electricidad, lo que los distingue de los metales.', multi: 'OFF', maxSelect: 1 },
+           { question: 'El bronce es una de las aleaciones más antiguas de la prehistoria, y se forma a partir del cobre y estaño. En la actualidad es muy utilizado en la fabricación de monedas, herramientas y piezas industriales como las turbinas. Con respecto a los metales, seleccione las características correctas del elemento mencionado. <br> I. Su fuerza se debe a la atracción entre los cationes y la nube electrónica. <br> II. Se presenta entre átomos de alta electronegatividad y baja energía de ionización. <br> III. Poseen altos puntos de fusión comparados con el agua. <br> IV. Compuestos con este enlace son fácilmente deformables por acción de una fuerza externa.', options: ['I, III', 'I, IV', 'II, III', 'I, II'], answer: 'I, IV', explanation: 'La fuerza del bronce se debe a la atracción entre los cationes y la nube electrónica; esta propiedad le confiere alta conductividad y maleabilidad pudiéndose deformar con facilidad.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Los gases nobles son conocidos por ser:', options: ['Reactivos y formadores de compuestos fácilmente.', 'Estables y tener una alta electronegatividad.', 'Incoloros e inodoros a temperatura ambiente.', 'Metales pesados'], answer: 'Incoloros e inodoros a temperatura ambiente.', explanation: 'Describe fielmente el estado físico y las propiedades organolépticas macroscópicas universales de la familia de los gases nobles.', multi: 'OFF', maxSelect: 1 },
+           { question: 'El elemento con mayor electronegatividad es generalmente:', options: ['Francio (Fr)', 'Flúor (F)', 'Oxígeno (O)', 'Cloro (Cl)'], answer: 'Flúor (F)', explanation: 'Explicación: La electronegatividad es la medida de la capacidad relativa de un átomo para atraer hacia sí el par de electrones compartidos en un enlace químico. <br> En un periodo (fila horizontal): Aumenta de izquierda a derecha debido al incremento de la carga nuclear efectiva, lo que atrae a la nube electrónica con mayor fuerza. <br> En un grupo (columna vertical): Aumenta de abajo hacia arriba debido a la disminución del radio atómico y la menor apantallamiento de las capas electrónicas internas. <br> Al excluir a los gases nobles (que generalmente no forman enlaces covalentes estándar), el elemento ubicado en la esquina superior derecha del bloque de no metales es el flúor ("F").', multi: 'OFF', maxSelect: 1 },
+           { question: 'Los elementos en la tabla periódica están ordenados principalmente por:', options: ['Masa atómica', 'Número de neutrones', 'Número atómico (Z)', 'Propiedades químicas'], answer: 'Número atómico (Z)', explanation: 'Ley Periódica Moderna: Moseley (1913) demostró que las propiedades de los elementos dependen de su número atómico (𝑍, cantidad de protones). <br> Ordenamiento actual: La tabla se secuencia en orden creciente de 𝑍(1,2,3…), lo que determina su configuración electrónica y comportamiento químico.', multi: 'OFF', maxSelect: 1 },
+           { question: '¿Qué indica un período en la tabla periódica?', options: ['El número de protones', 'La cantidad de electrones de valencia', 'El último nivel de energía ocupado por los electrones', 'La reactividad del elemento'], answer: 'El último nivel de energía ocupado por los electrones', explanation: 'Un período en la tabla periódica indica el último nivel de energía ocupado por los electrones; esto ayuda a entender las características electrónicas de los elementos.', multi: 'OFF', maxSelect: 1 },
+           { question: '¿Cuántos grupos o familias hay en la tabla periódica moderna?', options: ['10', '12', '16', '18'], answer: '18', explanation: 'Hay un total de 18 grupos o familias en la tabla periódica moderna, cada uno con propiedades químicas similares debido a configuraciones electrónicas similares.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Los elementos del Grupo IA se conocen como:', options: ['Halógenos', 'Gases nobles', 'Alcalinos', 'Anfígenos'], answer: 'Alcalinos', explanation: 'Los elementos del Grupo IA se conocen como metales alcalinos, caracterizados por ser altamente reactivos y tener un solo electrón en su capa externa.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Los elementos del Grupo VIIA son conocidos como:', options: ['Halógenos', 'Gases nobles', 'Alcalinos', 'Anfígenos'], answer: 'Halógenos', explanation: 'Los elementos del Grupo VIIA son conocidos como halógenos; son altamente reactivos y tienden a formar compuestos con metales al ganar electrones.', multi: 'OFF', maxSelect: 1 },
+           { question: '¿Qué subnivel termina la configuración electrónica de los elementos del Grupo A?', options: ['s y d', 's y p', 'd y f', 'p y f'], answer: 's y p', explanation: 'La configuración electrónica de los elementos del Grupo A termina en los subniveles s y p, reflejando sus características químicas específicas.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Los elementos de transición se encuentran en:', options: ['Zona d', 'Zona p', 'Zona f ', 'Zona s'], answer: 'Zona d', explanation: 'Dentro de la tabla periódica se va a encontrar a los elementos de transición en la zona d, lo que permite determinar la configuración electrónica de estos elementos. <br> <img src="https://drive.google.com/thumbnail?id=1gT0vLBma4NnYNeHL7UQuKTXoFXxflidM8fO2S_Y4Gmk&sz=w800-h600"width="600" height="300" alt="Descripción">', multi: 'OFF', maxSelect: 1 },
+           { question: 'La configuración electrónica del cobalto (Co, Z=27) es:', options: ['[18Ar] 4s<sup>2</sup> 3d<sup>7</sup>', '[36Kr] 5s<sup>2</sup> 4d<sup>3</sup>', '[10Ne] 3s<sup>2</sup> 3p<sup>5</sup>', '[18Ar] 4s<sup>2</sup> 4p<sup>3</sup>'], answer: '[18Ar] 4s<sup>2</sup> 3d<sup>7</sup>', explanation: 'La configuración electrónica del cobalto (Co) es [18Ar] 4s<sup>2</sup> 3d<sup>7</sup>; esta disposición muestra cómo se distribuyen los electrones en sus niveles energéticos.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Los metales son generalmente', options: ['Malos conductores del calor y la electricidad.', 'Sólidos a temperatura ambiente, excepto el mercurio.', 'Quebradizos en estado sólido.', 'Tienden a ganar electrones.'], answer: 'Sólidos a temperatura ambiente, excepto el mercurio.', explanation: 'Los metales son generalmente sólidos a temperatura ambiente, excepto el mercurio; esto les confiere propiedades físicas distintivas frente a otros tipos de elementos.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Un ejemplo de un elemento no metálico es:', options: ['Hierro (Fe)', 'Oxígeno (O)', 'Cobre (Cu)', 'Aluminio (Al)'], answer: 'Oxígeno (O)', explanation: 'Un ejemplo de un elemento no metálico es el oxígeno (O), que es esencial para la vida y se encuentra como gas a temperatura ambiente.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Los semimetales tienen propiedades que son:', options: ['Exclusivamente metálicas.', 'Exclusivamente no metálicas.', 'Intermedias entre metales y no metales.', 'Ninguna de las anteriores.'], answer: 'Intermedias entre metales y no metales.', explanation: 'Los semimetales tienen propiedades intermedias entre metales y no metales; pueden conducir electricidad pero no tan bien como los metales puros.', multi: 'OFF', maxSelect: 1 },
+           { question: 'El radio atómico generalmente:', options: ['Disminuye al descender en un grupo.', 'Aumenta al moverse hacia la derecha en un período.', 'Disminuye al moverse hacia la derecha en un período.', 'Permanece constante en toda la tabla.'], answer: 'Disminuye al moverse hacia la derecha en un período.', explanation: 'El radio atómico generalmente disminuye al moverse hacia la derecha en un período debido al aumento de carga nuclear efectiva sobre los electrones externos. <br> <img src="https://drive.google.com/thumbnail?id=1MTTUNX3ijKK8ZYkAil_UppeYO0eisvmcdxfRaHeUhFM&sz=w800-h600"width="450" height="240" alt="Descripción">', multi: 'OFF', maxSelect: 1 },
+           { question: 'La energía de ionización se refiere a:', options: ['La energía necesaria para ganar un electrón.', 'La energía necesaria para perder un electrón.', 'La energía liberada al formar un anión.', 'La energía requerida para fusionar átomos.'], answer: 'La energía necesaria para perder un electrón.', explanation: 'La energía de ionización se refiere a la energía necesaria para perder un electrón; es una propiedad importante para entender reactividad química. <br> <img src="https://drive.google.com/thumbnail?id=1No_Zt0_XIv8LOe4TBZLLD2NfdrYQqURI-IW0uY2Y8FY&sz=w800-h600"width="550" height="300" alt="Descripción">', multi: 'OFF', maxSelect: 1 },
+           { question: 'La afinidad electrónica es:', options: ['La energía necesaria para ionizar un átomo.', 'El cambio energético cuando un átomo acepta un electrón.', 'La capacidad de atraer electrones en un enlace químico.', 'La tendencia a perder electrones.'], answer: 'El cambio energético cuando un átomo acepta un electrón.', explanation: 'La afinidad electrónica es el cambio energético cuando un átomo acepta un electrón; indica cuán fácilmente un elemento puede formar aniones. <br> <img src="https://drive.google.com/thumbnail?id=1esnmIN0PK7wnLi3cf5cJVcve8yN4_eo7iE3ehT1BzAg&sz=w800-h600"width="550" height="300" alt="Descripción">', multi: 'OFF', maxSelect: 1 },
+           { question: 'La electronegatividad aumenta generalmente:', options: ['Al descender en un grupo.', 'Al moverse hacia la izquierda en un período.', 'Al moverse hacia la derecha en un período.', 'Es igual para todos'], answer: 'Al moverse hacia la derecha en un período.', explanation: 'La afinidad electrónica es el cambio energético cuando un átomo acepta un electrón; indica cuán fácilmente un elemento puede formar aniones. <br> <img src="https://drive.google.com/thumbnail?id=1NfrA3K0OigpDqce67czeGW_-2DcHmh4wtRtYOlfARdU&sz=w800-h600"width="550" height="300" alt="Descripción">', multi: 'OFF', maxSelect: 1 },
+           { question: 'El carácter metálico tiende a:', options: ['Disminuir al descender en un grupo.', 'Aumentar al moverse hacia la derecha en un período.', 'Disminuir al moverse hacia la izquierda en un período.', 'Aumenta al descender en un grupo.'], answer: 'Aumenta al descender en un grupo.', explanation: 'El carácter metálico tiende a aumentar al descender en un grupo porque los electrones externos están más alejados del núcleo y son más fáciles de perder. <br> <img src="https://drive.google.com/thumbnail?id=1BQWwbOweawwgBsmxI2PJfsyOftMyHgI6_JKab7L5Fsc&sz=w800-h600"width="550" height="300" alt="Descripción">', multi: 'OFF', maxSelect: 1 },
+        ];
+
+        // Práctica — 20 preguntas
+        const quizDataExtra = [
+          { question: 'El helio (He Z=2), aunque es un gas noble, tiene una configuración electrónica que termina en:', options: ['s²', 'p⁶', 's¹', 's²p⁶'], answer: 's²', explanation: 'El helio tiene una configuración electrónica terminando en s<sup>2</sup>; aunque es un gas noble, esta configuración le confiere estabilidad química.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Los elementos que tienen electrones en el subnivel f pertenecen a:', options: ['Grupo IIA', 'Elementos de transición interna', 'Gases nobles', 'Halógenos'], answer: 'Elementos de transición interna', explanation: 'Los elementos con electrones en el subnivel f pertenecen a los elementos de transición interna; estos incluyen lantánidos y actínidos, conocidos por sus propiedades únicas.', multi: 'OFF', maxSelect: 1 },
+           { question: 'El elemento con el número atómico 12 es:', options: ['Carbono (C)', 'Magnesio (Mg)', 'Silicio (Si)', 'Calcio (Ca)'], answer: 'Magnesio (Mg)', explanation: 'El elemento con número atómico 12 es el magnesio (Mg), un metal alcalino térreo importante para diversas aplicaciones industriales y biológicas.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Los gases nobles son conocidos por ser:', options: ['Reactivos y formadores de compuestos fácilmente.', 'Inestables y tener una alta electronegatividad.', 'Estables e inertes', 'Metales pesados.'], answer: 'Estables e inertes', explanation: 'Los gases nobles son conocidos por ser estables e inertes; esto significa que tienen capas electrónicas completas que les impiden reaccionar fácilmente con otros elementos.', multi: 'OFF', maxSelect: 1 },
+           { question: 'La tendencia a perder electrones es característica de:', options: ['No metales', 'Metales', 'Semimetales', 'Gases nobles'], answer: 'Metales', explanation: 'La tendencia a perder electrones es característica de los metales, que forman cationes durante reacciones químicas debido a su baja energía de ionización.', multi: 'OFF', maxSelect: 1 },
+           { question: 'El elemento con mayor electronegatividad es:', options: ['Francio (Fr)', 'Flúor (F)', 'Oxígeno (O)', 'Cloro (Cl)'], answer: 'Flúor (F)', explanation: 'El flúor es generalmente considerado el elemento con mayor electronegatividad; esto significa que tiene una fuerte tendencia a atraer electrones hacia sí mismo durante enlaces químicos.', multi: 'OFF', maxSelect: 1 },
+           { question: '¿Cuál es el grupo que contiene los metales alcalinos térreos?', options: ['Grupo I', 'Grupo II', 'Grupo III', 'Grupo IV'], answer: 'Grupo II', explanation: 'El grupo que contiene los metales alcalinos térreos es el Grupo II; estos elementos tienen dos electrones en su capa externa y son menos reactivos que los metales alcalinos.', multi: 'OFF', maxSelect: 1 },
+           { question: '¿Qué propiedad aumenta al movernos hacia arriba en un grupo?', options: ['Radio atómico', 'Energía de ionización', 'Carácter metálico', 'Radio iónico'], answer: 'Energía de ionización', explanation: 'Al movernos hacia arriba en un grupo, generalmente aumenta la energía de ionización porque los electrones están más cerca del núcleo y experimentan una mayor atracción nuclear efectiva. <br> <img src="https://drive.google.com/thumbnail?id=1rhU2DW8huAau0NHZtt_O-WQIHbm3hfElruL7SWj-BzE&sz=w800-h600"width="550" height="260" alt="Descripción">', multi: 'OFF', maxSelect: 1 },
+           { question: 'Con base en la información, determine el cuarto número cuántico del siguiente elemento: <br> Nihonio (7d<sup>1</sup>) <br> <img src="https://drive.google.com/thumbnail?id=1sMHBzYCeS1rkVOuMllCHoofDQMzkY-h50HI6MuXiljM&sz=w800-h600"width="550" height="260" alt="Descripción">', options: ['X (ms=+1/2)', 'X (ms= -1/2)', 'X (ms= +2)', 'X (ms= -2)'], answer: 'X (ms=+1/2)', explanation: 'La orientación del último electrón se determina a través del número cuántico ms. En este caso, el átomo x se encuentra  en el grupo IIIA, donde siempre se obtendrá un ms=+1/2 o un spin hacia arriba.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Todos los elementos de un mismo grupo tienen el mismo número de: ', options: ['Niveles de energía', 'Electrones de valencia', 'Radio atómico', 'Electrones'], answer: 'Electrones de valencia', explanation: 'Todos los elementos de un grupo suelen tener el mismo número que electrones de valencia que corresponde a los electrones del último nivel, esto determinado mediante la configuración electrónica.', multi: 'OFF', maxSelect: 1 },
+           { question: 'El átomo de la siguiente configuración electrónica        [Ar 18] 4s2 pertenece al grupo _______________ y se llama __________', options: ['Metales de transición – Cromo', 'Alcalino – potasio', 'Alcalinotérreos – Calcio', 'Carbonoides - Germanio'], answer: 'Alcalinotérreos – Calcio', explanation: 'Al realizar la suma de los electrones de la configuración electrónica, obtendremos que da un total de 20 electrones lo que en sí es igual al numero atómico y por ende corresponde al elemento calcio, ubicado en el grupo IIA Alcalinotérreos.', multi: 'OFF', maxSelect: 1 },
+           { question: 'El elemento más ligero conocido es:', options: ['Helio (He)', 'Hidrógeno (H)', 'Litio (Li)', 'Berilio (Be)'], answer: 'Hidrógeno (H)', explanation: 'El hidrógeno es el elemento más ligero conocido; su simplicidad estructural lo convierte en el primer elemento en la tabla periódica y esencial para muchas reacciones químicas.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Con base en la información, determine el nivel de energía de los elementos: <br> <img src="https://drive.google.com/thumbnail?id=1dNNAvOUGpUnsWuHfI6bljdihUFPagGuF2ftv84Brd6I&sz=w800-h600"width="550" height="260" alt="Descripción">', options: ['X (n=2), Y (n=4)', 'X (n=4), Y (n=2)', 'X (n=1), Y (n=4)', 'X (n=4), Y (n=1)'], answer: 'X (n=4), Y (n=2)', explanation: 'El nivel de energía se determina por la posición vertical del elemento tomando como referencia inicial la posición del hidrógeno. Si vamos contando hacia abajo se obtiene que el elemento Y está en el nivel 2, mientras que X en  el nivel 4.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Los gases nobles en cada periodo al elemento de: ', options: ['Mayor electronegatividad', 'Mayor afinidad electrónica', 'Mayor energía de ionización', 'Menor radio atómico'], answer: 'Mayor energía de ionización', explanation: 'La energía de ionización es la cantidad de energía necesaria para remover un electrón de un átomo en estado gaseoso. Los gases nobles tienen configuraciones electrónicas estables (capa de valencia completa), por lo que requieren mucha energía para perder un electrón.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Con base en la información, determine el elemento con menor nivel de energía: <br> <img src="https://drive.google.com/thumbnail?id=1be2ovISgXoYTRclWtunZxiAPvLxeJgq_BUxIxvaS3pc&sz=w800-h600"width="550" height="260" alt="Descripción">', options: ['X', 'Y', 'Ninguno', 'Están en el mismo nivel'], answer: 'Y', explanation: 'Los niveles de energía crecen de arriba hacia abajo, y debido a que X está abajo se deduce que tiene un mayor nivel en comparación con Y.', multi: 'OFF', maxSelect: 1 },
+           { question: 'La configuración electrónica de un elemento es 1s<sup>2</sup>, 2s<sup>2</sup>, 2p<sup>6</sup>, 3s<sup>2</sup>, 3p<sup>6</sup>. ¿Cuál es el número de electrones de valencia?', options: ['18', '11', '6', '8'], answer: '8', explanation: 'Los electrones de valencia corresponden a la cantidad de electrones contenidos en el último nivel de energía. En este caso, el último nivel de energía es 3, n este nivel, tenemos 3s<sup>2</sup> 3p<sup>6</sup> , lo que suma 8 electrones en la capa de valencia.', multi: 'OFF', maxSelect: 1 },
+           { question: 'La propiedad que describe la tendencia a atraer electrones se llama:', options: ['Ionización', 'Electronegatividad', 'Afinidad electrónica', 'Carácter metálico'], answer: 'Electronegatividad', explanation: 'La propiedad que describe la tendencia a atraer electrones se llama electronegatividad; esta propiedad influye directamente en las características reactivas del elemento.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Si se realiza una comparativa entre metales y no metales, se puede decir que los ______________ son más electronegativos y los _________________tienen mayor radio atómico. ', options: ['No metales – metales', 'Metales no metales', 'Metales-metales', 'No metales – no metales'], answer: 'No metales – metales', explanation: 'La electronegatividad aumenta de izquierda a derecha en un período y de abajo hacia arriba en un grupo, siendo más alta en los no metales situados en la parte superior derecha de la tabla periódica. Por otro lado, el radio atómico disminuye de izquierda a derecha y aumenta de arriba hacia abajo, siendo mayor en los metales ubicados en la parte inferior izquierda.', multi: 'OFF', maxSelect: 1 },
+           { question: 'Con base en la información, determine el nivel de energía de los elementos:  <br> <img src="https://drive.google.com/thumbnail?id=1PrUamJ9DQMIjgGfJNMXPCoV0iS6BVDLFjrUf_V1RFyg&sz=w800-h600"width="550" height="260" alt="Descripción">', options: ['X (n=2), Y (n=5)', 'X (n=5), Y (n=2)', 'X (n=4), Y (n=2)', 'd)   X (n=2), Y (n=4)'], answer: 'd)   X (n=2), Y (n=4)', explanation: 'El nivel de x es 2, ya que está ubicado en esa fila, mientras que el nivel de Y es 4 debido a que en los metales de transición se debe restar n-1 quedando 5-1=4.', multi: 'OFF', maxSelect: 1 },
+           { question: 'La configuración electrónica del nitrógeno (N, Z=7):', options: ['[He]2s<sup>2</sup>, 2p<sup>3</sup>', '[Ne]3s<sup>2</sup>3p<sup>3</sup>', '[Ar]4s<sup>2</sup>3d<sup>10</sup>', '[He]2s<sup>2</sup>2p<sup>4</sup>'], answer: '[He]2s<sup>2</sup>, 2p<sup>3</sup>', explanation: 'La configuración electrónica del nitrógeno es [He]2s<sup>2</sup>2p<sup>3</sup>; esta distribución muestra cómo se organizan sus electrones e influye directamente en su reactividad química.', multi: 'OFF', maxSelect: 1 },
+        ];
+
+        // EVALUACIÓN — 16 preguntas
+        const quizDataEvaluacion = [
+           { question: 'Según la Ley Periódica moderna, los elementos químicos en la tabla periódica se ordenan en secuencia creciente de acuerdo con su:', options: ['Peso atómico', 'Número de neutrones', 'Número de electrones de valencia', 'Número de atómica'], answer: 'Número de atómica', explanation: 'Ley Periódica Moderna (Henry Moseley): Las propiedades químicas y físicas de los elementos son una función periódica de su número atómico (𝑍). <br> Criterio de ordenamiento: La tabla periódica actual organiza los elementos en orden creciente según su cantidad de protones (𝑍). El número atómico (𝑍) define de forma unívoca la identidad química de cada átomo. <br> Diferencia histórica: El peso atómico fue el criterio empleado en las primeras tablas (Mendeleev), pero presentó anomalías que fueron resueltas al adoptar el número atómico (𝑍).', multi: 'OFF', maxSelect: 1 },
+            { question: 'Complete la oración con los términos adecuados: <br> Los metales alcalinos se caracterizan por ____, es decir, pierden electrones y forman iones positivos; mientras que los calcógenos se caracterizan por ____, es decir, ganan electrones y forman iones negativos.', options: ['Reducirse-oxidarse', 'Oxidarse-reducirse', 'Ionizarse-oxidarse', 'Ionizarse-reducirse'], answer: 'Oxidarse-reducirse', explanation: 'Conceptos clave de las reacciones redox: <br> Oxidación: Pérdida de electrones &rArr; Formación de cationes (iones positivos). <br> Reducción: Ganancia de electrones &rArr; Formación de aniones (iones negativos). <br> Comportamiento por familias periódicas: <br> Metales alcalinos (Grupo 1): Ceden con facilidad su único electrón de valencia, por lo que tienden a oxidarse. <br> Calcógenos (Grupo 16): Captan 2 electrones para completar su octeto, por lo que tienden a reducirse.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Los semimetales o metaloides presentan propiedades intermedias entre los metales y los no metales. <br> ¿Cuál de las siguientes parejas de elementos corresponde a metaloides muy utilizados en la industria tecnológica como semiconductores para la fabricación de microchips y transistores?', options: ['Hierro (Fe) y Cobre (Cu)', 'Silicio (Si) y Germanio (Ge)', 'Sodio (Na) y Potasio (K)', 'Cloro (Cl) y Bromo (Br)'], answer: 'Silicio (Si) y Germanio (Ge)', explanation: 'El silicio (Si) y el germanio (Ge) son los semimetales o metaloides más comunes y representan la base de la industria de los semiconductores por su capacidad intermedia de conducción eléctrica bajo ciertas condiciones.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Con respecto a las propiedades periódicas, señale la alternativa que define adecuadamente el concepto de Afinidad Electrónica (AE):', options: ['Es la energía mínima requerida para remover un electrón del último nivel de un átomo gaseoso.', 'Es el cambio energético que ocurre cuando un átomo neutro en estado gaseoso acepta un electrón para formar un anión.', 'Es la tendencia de un átomo a atraer electrones hacia sí mismo durante la formación de un enlace químico.', 'Es la mitad de la distancia entre dos núcleos atómicos idénticos enlazados.'], answer: 'Es el cambio energético que ocurre cuando un átomo neutro en estado gaseoso acepta un electrón para formar un anión.', explanation: 'La afinidad electrónica (AE) mide la variación de energía producida cuando un átomo neutro en fase gaseosa captura un electrón para convertirse en un ion negativo (anión). (La opción A corresponde a la energía de ionización, C a la electronegatividad y D al radio atómico).', multi: 'OFF', maxSelect: 1 },
+            { question: 'El carácter metálico (C.M.) de un elemento refleja su tendencia a perder electrones con facilidad (oxidarse) para formar cationes. Señale la proposición correcta respecto a la variación periódica de esta propiedad:', options: ['Aumenta al subir dentro de un grupo debido a la disminución del radio atómico.', 'Aumenta al desplazarse hacia la derecha a lo largo de un periodo.', 'Aumenta al descender en un grupo debido al incremento del radio atómico y menor fuerza de atracción nuclear sobre los electrones externos.', 'Aumenta al desplazarse hacia la esquina superior derecha de la tabla periódica.'], answer: 'Aumenta al descender en un grupo debido al incremento del radio atómico y menor fuerza de atracción nuclear sobre los electrones externos.', explanation: 'El carácter metálico aumenta al descender en un grupo (al haber más capas electrónicas, la fuerza con la que el núcleo atrae a los electrones externos es menor, facilitando su pérdida) y aumenta hacia la izquierda en un periodo.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Henry Moseley demostró experimentalmente que las propiedades químicas y físicas de los elementos varían en función periódica de su número atómico (𝒁). ¿Qué científico estructuró la Tabla Periódica Moderna actual basándose en la ley de Moseley y la distribución electrónica?', options: ['Alfred Werner', 'Dmitri Mendeléyev', 'John Newlands', 'Antoine Lavoisier'], answer: 'Alfred Werner', explanation: 'Aunque Moseley estableció la Ley Periódica basada en el número atómico (𝑍), fue el químico alemán Alfred Werner en 1915 quien diseñó y estructuró la versión moderna de la tabla periódica, organizando los elementos en periodos y grupos según sus números atómicos y configuraciones electrónicas.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Si un elemento representativo pertenece a la familia de los anfígenos o calcógenos y se ubica en el periodo 5, ¿cuál es su configuración electrónica de valencia?', options: ['5s<sup>2</sup> 5p<sup>5</sup>', '5s<sup>2</sup> 5p<sup>4</sup>', '5s<sup>2</sup> 4d<sup>10</sup> 5p<sup>2</sup>', '5s<sup>2</sup> 5p<sup>3</sup>'], answer: '5s<sup>2</sup> 5p<sup>4</sup>', explanation: 'La familia de los anfígenos o calcógenos corresponde al Grupo VIA de la tabla periódica. Todos los elementos de este grupo poseen la configuración general de valencia 𝑛<sup>2</sup> 𝑛p<sup>4</sup>(6 electrones de valencia). Al estar en el periodo 5 (𝑛=5), su configuración de valencia es 5<sup>2</sup> 5p<sup>4</sup>.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Un catión divalente (M<sup>2+</sup>) posee una nube electrónica constituida por 18 electrones. Determine el periodo y grupo del elemento neutro 𝑴 en la Tabla Periódica Moderna.', options: ['Periodo 3, Grupo VIIIA (18)', 'Periodo 4, Grupo IA (1)', 'Periodo 4, Grupo IIA (2)', 'Periodo 3, Grupo IIA (2)'], answer: 'Periodo 4, Grupo IIA (2)', explanation: 'Para el catión divalente M<sup>2+</sup>, sabemos que perdió 2 electrones: <br> #e<sup>-</sup>=𝑍−2=18&rArr;𝑍=20 <br> Realizamos la configuración electrónica para el átomo neutro (𝑍=20): <br> 1s<sup>2</sup>2s<sup>2</sup>2p<sup>6</sup>3s<sup>2</sup>3p<sup>6</sup>4s<sup>2</sup> <br> Periodo: Nivel máximo =4. <br> Grupo: Electrones de valencia en 4s<sup>2</sup>=2e<sup>-</sup>&rarr;Grupo IIA (Alcalinotérreos).', multi: 'OFF', maxSelect: 1 },
+            { question: 'Hacen referencia a las columnas verticales de la tabla periódica e indican que sus elementos poseen propiedades químicas similares. Corresponden a 16 grupos en el sistema tradicional y se les asigna los números del 1 al 18 en la nomenclatura IUPAC:', options: ['Periodos', 'Grupo A', 'Grupo B', 'Familias'], answer: 'Familias', explanation: 'Las columnas verticales representan las familias de la tabla periódica. Sus elementos poseen configuraciones electrónicas externas análogas, por lo que exhiben un comportamiento químico similar. Sistema IUPAC: Asigna números arábigos continuos del 1 al 18 a las 18 columnas. Sistema tradicional: Los dividía en 16 grupos (8 grupos A y 8 grupos B) con números romanos. Las filas horizontales corresponden a los períodos (7 en total), los cuales indican el nivel principal de energía 𝑛.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Los elementos metálicos representan la mayoría de los elementos químicos de la tabla periódica y comparten propiedades características. Señale la opción que contiene una afirmación incorrecta sobre los metales:', options: ['Poseen un brillo metálico característico como el oro.', 'Tienden a ganar electrones, formando aniones.', 'Generalmente son sólidos a temperatura ambiente.', 'Tienen altos puntos de fusión.'], answer: 'Tienden a ganar electrones, formando aniones.', explanation: 'Comportamiento electrónico de los metales: Los metales tienen baja electronegatividad y baja energía de ionización. En las reacciones químicas ceden (pierden) electrones, formando cationes (iones positivos): <br> M<sup>0</sup> &rarr; M<sup>n+</sup>+ne<sup>-</sup> <br> Propiedades características de los metales: <br> Presentar lustre o brillo metálico. <br> Ser sólidos a temperatura ambiente (salvo el "Hg"). <br> Poseer elevados puntos de fusión y ebullición, además de ser excelentes conductores térmicos y eléctricos..', multi: 'OFF', maxSelect: 1 },
+            { question: 'Con base en la ubicación del elemento 𝑿en el esquema de la tabla periódica, señale la afirmación correcta: <br> <img src="https://drive.google.com/thumbnail?id=1LSF2_gdLLqTtTBU5Ge4cQJpv2PmOg8jz6JJ4qy7gdL8&sz=w800-h600"width="550" height="260" alt="Descripción">', options: ['X tiene n=5', 'X  pertenece al subnivel d', 'X tiene ml=-2', 'X tiene ms=-1/2'], answer: 'X  pertenece al subnivel d', explanation: 'Bloque 𝑠: Grupos 1 y 2 (alcalinos y alcalinotérreos) + "H"y "He." <br> Bloque 𝑝: Grupos 13 al 18 (no metales, metaloides, gases nobles). <br> Bloque 𝑑: Grupos 3 al 12 (metales de transición). <br> Bloque 𝑓: Lantánidos y actínidos. <br> Análisis del elemento X:  Al ubicarse en la zona central (metales de transición), sus electrones de menor energía relativa / diferenciadores están llenando el subnivel 𝑑.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Con base en la ubicación del elemento 𝑿en el esquema de la tabla periódica, señale la opción correcta: <br> <img src="https://drive.google.com/thumbnail?id=1ONyMqtv7jmkeaw8cXmR0ga5TInj0WjPqd7TujEFpiSU&sz=w800-h600"width="550" height="260" alt="Descripción">', options: ['El elemento X es un no metal', 'El elemento X es un metal.', 'El elemento X es un metaloide.', 'El elemento X es un gas noble.'], answer: 'El elemento X es un no metal', explanation: 'Metales (región turquesa): Ocupan la mayor parte de la tabla (izquierda y centro). <br> Metaloides / Semimetales (región roja): Forman la franja diagonal que divide las propiedades metálicas de las no metálicas. <br> No metales (región amarilla): Se ubican en la sección superior derecha (además del hidrógeno en el extremo superior izquierdo).', multi: 'OFF', maxSelect: 1 },
+            { question: 'Señale la opción que contiene una afirmación correcta sobre las propiedades de los elementos químicos:', options: ['Los elementos metálicos no conducen la electricidad.', 'Los elementos metálicos están mayormente en estado gaseoso.', 'Los elementos metálicos conducen el calor.', 'El mercurio es un no metal y es el único en estado sólido.'], answer: 'Los elementos metálicos conducen el calor.', explanation: 'Propiedades características de los metales: Conductividad térmica y eléctrica: Los electrones libres deslocalizados permiten la conducción rápida del calor y la corriente eléctrica. <br> Estado físico: A temperatura ambiente, la casi totalidad de los metales se encuentran en estado sólido (a excepción del mercurio, "Hg", que es líquido).', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuáles son los elementos químico más y menos electronegativos de la tabla periódica, respectivamente?', options: ['Flúor y francio', 'Francio y flúor', 'Helio e hidrógeno', 'Hidrógeno y helio'], answer: 'Flúor y francio', explanation: 'Variación periódica de la electronegatividad: Aumenta hacia la derecha en los períodos y hacia arriba en los grupos (excluyendo a los gases nobles de la escala de Pauling). <br> Extremos de electronegatividad en la tabla periódica: <br> Elemento más electronegativo: Flúor ("F"), ubicado en el extremo superior derecho (Grupo 17, Período 2), con valor de 3.98. <br> Elemento menos electronegativo: Francio ("Fr"), ubicado en el extremo inferior izquierdo (Grupo 1, Período 7), con valor de 0.7.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Con base en la organización de la tabla periódica en bloques y familias, señale la opción correcta:', options: ['Los metales alcalinos pertenecen al subnivel s<sup>1</sup>.', 'Los metales alcalinotérreos pertenecen al subnivel s<sup>2</sup>.', 'Los carbonoides pertenecen al subnivel d<sup>6</sup>.', 'Los anfígenos pertenecen al subnivel d<sup>2</sup>.'], answer: 'Los metales alcalinos pertenecen al subnivel s<sup>1</sup>.', explanation: ' <br> <img src="https://drive.google.com/thumbnail?id=17T7d7DxrMwshhljZSgiF3jZEP3t72pSdXY_u61P9IUc&sz=w800-h600"width="550" height="460" alt="Descripción">.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Con base en la organización de la tabla periódica en familias y bloques electrónicos, señale la opción correcta:', options: ['Los halógenos pertenecen al subnivel d<sup>5</sup>', 'Los boroides pertenecen al subnivel d<sup>2</sup>', 'Los calcógenos pertenecen al subnivel p<sup>4</sup>', 'Los nitrogenoides pertenecen al subnivel p<sup>3</sup>'], answer: 'Los calcógenos pertenecen al subnivel p<sup>4</sup>', explanation: 'Configuración terminal de las familias del Bloque 𝑝: <br> Boroides (Grupo 13 / III A): Configuración ns<sup>2</sup> np<sup>1</sup>. <br> Carbonoides (Grupo 14 / IV A): Configuración ns<sup>2</sup> np<sup>2</sup>. <br> Nitrogenoides (Grupo 15 / V A): Configuración ns<sup>2</sup> np<sup>3</sup>. <br> Calcógenos / Anfígenos (Grupo 16 / VI A): Configuración ns<sup>2</sup> np<sup>4</sup>. <br> Halógenos (Grupo 17 / VII A): Configuración ns<sup>2</sup> np<sup>5</sup>. <br> Conclusión: Los calcógenos o anfígenos poseen 4 electrones en su subnivel 𝑝más externo (np<sup>4</sup>).', multi: 'OFF', maxSelect: 1 },
+        ];
+
+        // ========== CONFIGURACIÓN DEL TEMPORIZADOR DE EVALUACIÓN ==========
+        const EVAL_TIMER_SECONDS = 960; // 16 minutos
+
+        const EVAL_TIMER_PHASES = [
+            { minSeconds: 480, colorClass: 'text-emerald-600 bg-emerald-50 border-emerald-300' }, // ≥ 8 min → verde
+            { minSeconds: 60,  colorClass: 'text-amber-600 bg-amber-50 border-amber-300' },     // ≥ 1 min  → ámbar
+            { minSeconds: 0,   colorClass: 'text-red-600 bg-red-50 border-red-300' }            // < 1 min  → rojo
+        ];
+        // ==================================================================
+
+        let state = {
+            currentMode: 'deber',
+            view: 'quiz_home',
+            studentName: '',
+            studentEmail: '',
+            activeQuestions: [],
+            currentQuestion: 0,
+            score: 0,
+            selectedAnswer: null,
+            isAnswerCorrect: null,
+            emailStatus: null,
+            emailAnalysis: null,
+            emailAnalysisMsg: '',
+            timeLeft: 0
+        };
+
+        let timerInterval = null;
+
+        const disposableDomains = [
+            'tempmail.com','temp-mail.org','guerrillamail.com','10minutemail.com','mailinator.com',
+            'yopmail.com','throwawaymail.com','fakeinbox.com','trashmail.com','getnada.com',
+            'maildrop.cc','dispostable.com','sharklasers.com','guerrillamailblock.com'
+        ];
+        const trustedProviders = [
+            'gmail.com','googlemail.com','hotmail.com','hotmail.es','hotmail.co.uk','outlook.com',
+            'outlook.es','live.com','msn.com','yahoo.com','yahoo.es','icloud.com','me.com',
+            'protonmail.com','proton.me','aol.com','zoho.com','gmx.com','mail.com'
+        ];
+
+        function isValidEmailFormat(email) {
+            const re = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+            return re.test(email) && email.length <= 254 && !email.includes('..') && !email.startsWith('.') && !email.endsWith('.');
+        }
+
+        function analyzeEmail(email) {
+            const lower = email.toLowerCase().trim();
+            if (!lower) {
+                return { valid: false, msg: 'Escribe un correo electrónico.' };
+            }
+            if (!isValidEmailFormat(lower)) {
+                return { valid: false, msg: 'Formato inválido. Revisa que tenga @ y un dominio correcto.' };
+            }
+            const domain = lower.split('@')[1];
+            if (!domain || domain.length < 3) {
+                return { valid: false, msg: 'Dominio incompleto o inválido.' };
+            }
+            if (disposableDomains.some(d => domain === d || domain.endsWith('.' + d))) {
+                return { valid: false, msg: 'Correo temporal / desechable detectado. Usa un correo real.' };
+            }
+            const isTrusted = trustedProviders.some(p => domain === p);
+            const hasGoodTld = /\.(com|es|net|org|edu|gov|mx|ar|co|uk|de|fr|it|pt|br|cl)$/i.test(domain);
+            if (!hasGoodTld && !isTrusted) {
+                return { valid: false, msg: 'Dominio poco común o sospechoso. Usa Gmail, Hotmail/Outlook, Yahoo, etc.' };
+            }
+            let analysisText = '';
+            if (domain.includes('hotmail') || domain.includes('outlook') || domain.includes('live.com') || domain.includes('msn.com')) {
+                analysisText = 'Análisis: proveedor Microsoft (Hotmail/Outlook) detectado · formato correcto · dominio legítimo';
+            } else if (domain.includes('gmail') || domain.includes('googlemail')) {
+                analysisText = 'Análisis: proveedor Google (Gmail) detectado · formato correcto · dominio legítimo';
+            } else if (isTrusted) {
+                analysisText = 'Análisis: proveedor conocido · formato correcto · dominio legítimo';
+            } else {
+                analysisText = 'Análisis: formato válido · dominio con TLD estándar · no se detectaron patrones de correo temporal';
+            }
+            return { valid: true, msg: analysisText };
+        }
+
+        function showSection(section, btn) {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            stopTimer();
+            const app = document.getElementById('app');
+            if (section === 'pdf') {
+                app.innerHTML = `<div class="animate-fade-in"><h2 class="text-xl font-bold mb-4">📄 Pizarra Virtual</h2><div class="iframe-container"><iframe src="${DRIVE_PDF_URL}" width="100%" height="100%" allow="autoplay"></iframe></div></div>`;
+            } else if (section === 'video') {
+                app.innerHTML = `<div class="animate-fade-in"><h2 class="text-xl font-bold mb-4">🎥 Video Clase</h2><div class="iframe-container"><iframe src="${DRIVE_VIDEO_URL}" width="100%" height="100%" allow="autoplay"></iframe></div></div>`;
+            }
+        }
+
+        function prepQuiz(mode, btn) {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            stopTimer();
+           
+            state = {
+                currentMode: mode,
+                view: 'quiz_home',
+                studentName: '',
+                studentEmail: '',
+                activeQuestions: [],
+                currentQuestion: 0,
+                score: 0,
+                selectedAnswer: null,
+                isAnswerCorrect: null,
+                emailStatus: null,
+                emailAnalysis: null,
+                emailAnalysisMsg: '',
+                timeLeft: 0
+            };
+            render();
+        }
+
+        function startQuiz() {
+            if (state.currentMode === 'deber') {
+                // Deber: 30 preguntas en orden
+                state.activeQuestions = [...quizData];
+            } else if (state.currentMode === 'evaluacion') {
+                // Repaso: 10 preguntas aleatorias del banco principal
+                state.activeQuestions = [...quizData]
+                    .sort(() => 0.5 - Math.random())
+                    .slice(0, 10);
+            } else if (state.currentMode === 'extra') {
+                // Práctica: 20 preguntas en orden
+                state.activeQuestions = [...quizDataExtra];
+            } else if (state.currentMode === 'evaluacion_final') {
+                // Evaluación: 16 preguntas en orden
+                state.activeQuestions = [...quizDataEvaluacion];
+            }
+            state.view = 'name_input';
+            state.emailAnalysis = null;
+            state.emailAnalysisMsg = '';
+            render();
+        }
+
+        function onEmailInput() {
+            const e = document.getElementById('email-in');
+            if (!e) return;
+            const val = e.value.trim();
+            if (val.length < 5) {
+                state.emailAnalysis = null;
+                state.emailAnalysisMsg = '';
+                updateEmailUI();
+                return;
+            }
+            state.emailAnalysis = 'checking';
+            state.emailAnalysisMsg = 'Analizando correo…';
+            updateEmailUI();
+            clearTimeout(window._emailCheckTimer);
+            window._emailCheckTimer = setTimeout(() => {
+                const result = analyzeEmail(val);
+                state.emailAnalysis = result.valid ? 'valid' : 'invalid';
+                state.emailAnalysisMsg = result.msg;
+                updateEmailUI();
+            }, 600);
+        }
+
+        function updateEmailUI() {
+            const feedback = document.getElementById('email-feedback');
+            const analysis = document.getElementById('email-analysis');
+            const input = document.getElementById('email-in');
+            if (!feedback || !analysis || !input) return;
+            if (state.emailAnalysis === 'checking') {
+                feedback.innerHTML = `<span class="text-slate-500 text-sm flex items-center gap-2"><span class="dot-pulse">●</span> Verificando…</span>`;
+                analysis.innerHTML = `<p class="text-xs text-slate-400 mt-1">${state.emailAnalysisMsg}</p>`;
+                input.classList.remove('border-red-400', 'border-emerald-400');
+                input.classList.add('border-slate-300');
+            } else if (state.emailAnalysis === 'invalid') {
+                feedback.innerHTML = `<span class="text-red-600 text-sm font-semibold">✗ Correo no válido o inexistente</span>`;
+                analysis.innerHTML = `<p class="text-xs text-red-500/80 mt-1">${state.emailAnalysisMsg}</p>`;
+                input.classList.remove('border-emerald-400', 'border-slate-300');
+                input.classList.add('border-red-400');
+            } else if (state.emailAnalysis === 'valid') {
+                feedback.innerHTML = `<span class="text-emerald-600 text-sm font-semibold">✓ Correo aceptado</span>`;
+                analysis.innerHTML = `<p class="text-xs text-emerald-600/80 mt-1">${state.emailAnalysisMsg}</p>`;
+                input.classList.remove('border-red-400', 'border-slate-300');
+                input.classList.add('border-emerald-400');
+            } else {
+                feedback.innerHTML = '';
+                analysis.innerHTML = '';
+                input.classList.remove('border-red-400', 'border-emerald-400');
+                input.classList.add('border-slate-300');
+            }
+        }
+
+        function validaDatos() {
+            const n = document.getElementById('name-in').value.trim();
+            const e = document.getElementById('email-in').value.trim();
+            if (n.length <= 2) {
+                alert("Ingresa nombre completo (mínimo 3 caracteres).");
+                return;
+            }
+            const result = analyzeEmail(e);
+            state.emailAnalysis = result.valid ? 'valid' : 'invalid';
+            state.emailAnalysisMsg = result.msg;
+            updateEmailUI();
+            if (!result.valid) return;
+            state.studentName = n;
+            state.studentEmail = e;
+            state.view = 'playing';
+            if (state.currentMode === 'evaluacion_final') {
+                startTimer();
+            }
+            render();
+        }
+
+        // ---------- TEMPORIZADOR (solo Evaluación) ----------
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const s = (seconds % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        }
+
+        function getTimerPhaseClass(remaining) {
+            for (const phase of EVAL_TIMER_PHASES) {
+                if (remaining >= phase.minSeconds) {
+                    return phase.colorClass;
+                }
+            }
+            return EVAL_TIMER_PHASES[EVAL_TIMER_PHASES.length - 1].colorClass;
+        }
+
+        function startTimer() {
+            stopTimer();
+            state.timeLeft = EVAL_TIMER_SECONDS;
+            timerInterval = setInterval(() => {
+                state.timeLeft--;
+                if (state.timeLeft <= 0) {
+                    state.timeLeft = 0;
+                    stopTimer();
+                    state.view = 'results';
+                    render();
+                    enviarCorreo();
+                    return;
+                }
+                const timerEl = document.getElementById('eval-timer');
+                if (timerEl) {
+                    timerEl.textContent = formatTime(state.timeLeft);
+                    timerEl.className = `px-3 py-1.5 rounded-xl border-2 font-black text-sm tabular-nums ${getTimerPhaseClass(state.timeLeft)}`;
+                }
+            }, 1000);
+        }
+
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+
+        // ---------- LÓGICA SINGLE + MULTI ----------
+        function isMultiQuestion(q) {
+            return q.multi === 'ON';
+        }
+
+        function arraysEqual(a, b) {
+            if (!Array.isArray(a) || !Array.isArray(b)) return false;
+            if (a.length !== b.length) return false;
+            const sa = [...a].sort();
+            const sb = [...b].sort();
+            return sa.every((v, i) => v === sb[i]);
+        }
+
+        function escapeAttr(str) {
+            return String(str)
+                .replace(/\\/g, '\\\\')
+                .replace(/'/g, "\\'")
+                .replace(/"/g, '&quot;')
+                .replace(/\n/g, ' ');
+        }
+
+        function handleAnswer(option) {
+            if (state.isAnswerCorrect !== null) return;
+
+            const currentQ = state.activeQuestions[state.currentQuestion];
+
+            if (isMultiQuestion(currentQ)) {
+                let selected = Array.isArray(state.selectedAnswer) ? [...state.selectedAnswer] : [];
+                const idx = selected.indexOf(option);
+
+                if (idx > -1) {
+                    selected.splice(idx, 1);
+                } else {
+                    if (selected.length >= currentQ.maxSelect) return;
+                    selected.push(option);
+                }
+                state.selectedAnswer = selected;
+                render();
+            } else {
+                if (state.selectedAnswer !== null) return;
+                state.selectedAnswer = option;
+                state.isAnswerCorrect = (option === currentQ.answer);
+                if (state.isAnswerCorrect) state.score++;
+                render();
+                if (state.isAnswerCorrect) {
+                    setTimeout(() => nextQuestion(), 1000);
+                }
+            }
+        }
+
+        function checkMultiAnswer() {
+            if (state.isAnswerCorrect !== null) return;
+
+            const currentQ = state.activeQuestions[state.currentQuestion];
+            if (!isMultiQuestion(currentQ)) return;
+
+            const selected = Array.isArray(state.selectedAnswer) ? state.selectedAnswer : [];
+            if (selected.length === 0) return;
+
+            const correctAnswers = Array.isArray(currentQ.answer) ? currentQ.answer : [currentQ.answer];
+            state.isAnswerCorrect = arraysEqual(selected, correctAnswers);
+
+            if (state.isAnswerCorrect) state.score++;
+            render();
+
+            if (state.isAnswerCorrect) {
+                setTimeout(() => nextQuestion(), 1000);
+            }
+        }
+
+        function nextQuestion() {
+            if (state.currentQuestion + 1 < state.activeQuestions.length) {
+                state.currentQuestion++;
+                state.selectedAnswer = null;
+                state.isAnswerCorrect = null;
+                render();
+            } else {
+                stopTimer();
+                state.view = 'results';
+                render();
+                enviarCorreo();
+            }
+        }
+
+        function enviarCorreo() {
+            if (!state.studentEmail) return;
+            state.emailStatus = 'sending';
+            render();
+            const scorePerc = Math.round((state.score / state.activeQuestions.length) * 100);
+            const totalQ = state.activeQuestions.length;
+            let imageUrl = '';
+            let mensaje = '';
+            if (scorePerc >= 90) {
+                imageUrl = 'https://img.icons8.com/color/128/medal2.png';
+                mensaje = `¡Excelente trabajo, ${state.studentName}! Obtuviste un resultado sobresaliente.`;
+            } else if (scorePerc >= 70) {
+                imageUrl = 'https://img.icons8.com/color/128/diploma.png';
+                mensaje = `¡Muy bien, ${state.studentName}! Has aprobado con un buen resultado.`;
+            } else if (scorePerc >= 50) {
+                imageUrl = 'https://img.icons8.com/color/128/ok.png';
+                mensaje = `Buen esfuerzo, ${state.studentName}. Sigue practicando para mejorar.`;
+            } else {
+                imageUrl = 'https://img.icons8.com/color/128/error.png';
+                mensaje = `Ánimo, ${state.studentName}. Revisa el material y vuelve a intentarlo.`;
+            }
+            const params = {
+                to_name: state.studentName,
+                to_email: state.studentEmail,
+                score: scorePerc,
+                correct_answers: state.score,
+                total_questions: totalQ,
+                mode_name: state.currentMode.toUpperCase(),
+                image_url: imageUrl,
+                mensaje: mensaje,
+                fecha: new Date().toLocaleDateString('es-ES', {
+                    year: 'numeric', month: 'long', day: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                })
+            };
+            emailjs.send("service_dhvsi72", "template_cy74x9h", params)
+                .then(() => {
+                    state.emailStatus = 'success';
+                    render();
+                })
+                .catch((err) => {
+                    console.error('Error EmailJS:', err);
+                    state.emailStatus = 'error';
+                    render();
+                });
+        }
+
+        function render() {
+            const app = document.getElementById('app');
+           
+            let modeTitle = '';
+            let modeDesc = '';
+            if (state.currentMode === 'deber') {
+                modeTitle = '🧪 Deber';
+                modeDesc = 'Resuelve las 30 preguntas del banco en orden.';
+            } else if (state.currentMode === 'evaluacion') {
+                modeTitle = '📝 Repaso';
+                modeDesc = 'Prueba de 10 preguntas seleccionadas al azar.';
+            } else if (state.currentMode === 'extra') {
+                modeTitle = '📚 Práctica';
+                modeDesc = 'Resuelve las 20 preguntas de práctica.';
+            } else if (state.currentMode === 'evaluacion_final') {
+                modeTitle = '📊 Evaluación';
+                modeDesc = 'Resuelve las 16 preguntas de la Evaluación (tiempo límite: 16 min).';
+            }
+           
+            if (state.view === 'quiz_home') {
+                app.innerHTML = `
+                <div class="text-center py-16 animate-fade-in bg-white rounded-[3rem] shadow-xl border">
+                    <h2 class="text-4xl font-black text-slate-800 mb-2">${modeTitle}</h2>
+                    <p class="text-slate-500 mb-8 text-lg">${modeDesc}</p>
+                    <button onclick="startQuiz()" class="bg-emerald-600 text-white px-12 py-5 rounded-2xl font-black text-xl hover:bg-emerald-700 transition-all">
+                        INICIAR
+                    </button>
+                </div>`;
+            }
+
+            if (state.view === 'name_input') {
+                app.innerHTML = `
+                <div class="max-w-md mx-auto bg-white p-10 rounded-[2.5rem] shadow-2xl animate-fade-in">
+                    <h2 class="text-2xl font-black mb-6 text-center">Registro de Estudiante</h2>
+                    <input id="name-in" type="text" placeholder="Nombre y Apellido completo" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl mb-4 focus:border-emerald-500 outline-none">
+                   
+                    <div class="relative mb-1">
+                        <input id="email-in" type="email" placeholder="Correo para recibir nota (Gmail, Hotmail…)"
+                               class="w-full p-4 bg-slate-50 border border-slate-300 rounded-xl focus:border-emerald-500 outline-none transition-colors"
+                               oninput="onEmailInput()" onblur="onEmailInput()">
+                    </div>
+                   
+                    <div id="email-feedback" class="min-h-[22px] mb-1"></div>
+                    <div id="email-analysis" class="mb-5"></div>
+                   
+                    <button onclick="validaDatos()" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold hover:bg-slate-800 transition-all">
+                        ENTRAR AL TEST
+                    </button>
+                    <p class="text-center text-[11px] text-slate-400 mt-4">Se verifica formato y se descartan correos temporales. No se envía nada hasta terminar el test.</p>
+                </div>`;
+                setTimeout(updateEmailUI, 50);
+            }
+
+            if (state.view === 'playing') {
+                const q = state.activeQuestions[state.currentQuestion];
+                const progress = ((state.currentQuestion + 1) / state.activeQuestions.length) * 100;
+                const multi = isMultiQuestion(q);
+                const selected = multi
+                    ? (Array.isArray(state.selectedAnswer) ? state.selectedAnswer : [])
+                    : (state.selectedAnswer ? [state.selectedAnswer] : []);
+
+                const multiHint = multi
+                    ? `<p class="text-sm text-sky-600 font-semibold mb-4">
+                         Selección múltiple · elige ${q.maxSelect} respuesta${q.maxSelect > 1 ? 's' : ''}
+                         ${selected.length > 0 ? `(${selected.length}/${q.maxSelect})` : ''}
+                       </p>`
+                    : '';
+
+                // Timer solo en Evaluación (evaluacion_final)
+                const timerHtml = (state.currentMode === 'evaluacion_final')
+                    ? `<div id="eval-timer" class="px-3 py-1.5 rounded-xl border-2 font-black text-sm tabular-nums ${getTimerPhaseClass(state.timeLeft)}">
+                           ${formatTime(state.timeLeft)}
+                       </div>`
+                    : '';
+
+                app.innerHTML = `
+                <div class="animate-fade-in">
+                    <div class="flex justify-between items-center mb-6 px-4 gap-4">
+                        <span class="font-black text-emerald-600">${state.currentQuestion + 1} / ${state.activeQuestions.length}</span>
+                        <div class="flex-1 max-w-xs bg-slate-200 h-2 rounded-full overflow-hidden">
+                            <div class="bg-emerald-500 h-full transition-all" style="width:${progress}%"></div>
+                        </div>
+                        ${timerHtml}
+                    </div>
+                    <div class="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-xl border">
+                        <h2 class="text-2xl font-bold text-slate-800 mb-2 leading-tight">${q.question}</h2>
+                        ${multiHint}
+                        <div class="grid gap-3">
+                            ${q.options.map(opt => {
+                                let style = "border-slate-100 bg-slate-50 hover:border-emerald-200";
+                                const isSelected = selected.includes(opt);
+
+                                if (state.isAnswerCorrect !== null) {
+                                    if (multi) {
+                                        const correctSet = Array.isArray(q.answer) ? q.answer : [q.answer];
+                                        if (correctSet.includes(opt) && isSelected) {
+                                            style = "border-emerald-500 bg-emerald-100 text-emerald-800";
+                                        } else if (isSelected && !correctSet.includes(opt)) {
+                                            style = "border-red-500 bg-red-100 text-red-800";
+                                        } else if (correctSet.includes(opt) && !isSelected) {
+                                            style = "border-emerald-300 bg-emerald-50 text-emerald-700";
+                                        }
+                                    } else {
+                                        if (isSelected) {
+                                            style = state.isAnswerCorrect
+                                                ? "border-emerald-500 bg-emerald-100 text-emerald-800"
+                                                : "border-red-500 bg-red-100 text-red-800";
+                                        } else if (opt === q.answer) {
+                                            // Mostrar la correcta si el usuario falló
+                                            style = "border-emerald-300 bg-emerald-50 text-emerald-700";
+                                        }
+                                    }
+                                } else if (isSelected) {
+                                    if (multi) {
+                                        style = "border-sky-400 bg-sky-100 text-sky-800";
+                                    } else {
+                                        style = "border-emerald-500 bg-emerald-100 text-emerald-800";
+                                    }
+                                }
+
+                                return `<button onclick="handleAnswer('${escapeAttr(opt)}')" 
+                                            class="p-5 text-left border-2 rounded-xl font-bold transition-all ${style}">
+                                            ${opt}
+                                        </button>`;
+                            }).join('')}
+                        </div>
+
+                        ${multi && state.isAnswerCorrect === null ? `
+                            <button onclick="checkMultiAnswer()" 
+                                class="mt-6 w-full py-4 rounded-xl font-bold transition-all
+                                ${selected.length === q.maxSelect 
+                                    ? 'bg-sky-600 text-white hover:bg-sky-700' 
+                                    : 'bg-slate-200 text-slate-400 cursor-not-allowed'}"
+                                ${selected.length !== q.maxSelect ? 'disabled' : ''}>
+                                Comprobar respuesta (${selected.length}/${q.maxSelect})
+                            </button>
+                        ` : ''}
+
+                        ${state.selectedAnswer !== null && state.isAnswerCorrect === false ? `
+                            <div class="mt-6 p-5 bg-amber-50 border border-amber-200 rounded-xl">
+                                <p class="font-bold text-amber-800 mb-2">Explicación:</p>
+                                <p class="text-slate-700">${q.explanation}</p>
+                            </div>
+                            <button onclick="nextQuestion()" class="mt-6 w-full bg-emerald-600 text-white py-4 rounded-xl font-bold hover:bg-emerald-700 transition-all">
+                                Siguiente pregunta
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>`;
+            }
+
+            if (state.view === 'results') {
+                const scorePerc = Math.round((state.score / state.activeQuestions.length) * 100);
+                app.innerHTML = `
+                <div class="max-w-md mx-auto text-center animate-fade-in bg-white p-12 rounded-[3rem] shadow-2xl">
+                    <h2 class="text-2xl font-black mb-2">${state.studentName}</h2>
+                    <p class="text-slate-400 uppercase text-xs font-bold mb-6">${state.currentMode}</p>
+                    <div class="text-7xl font-black text-emerald-600 mb-4">${scorePerc}%</div>
+                    <p class="text-lg font-bold text-slate-700 mb-10">${state.score} / ${state.activeQuestions.length} correctas</p>
+                    <button onclick="location.reload()" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold">VOLVER AL INICIO</button>
+                    <p class="mt-6 text-xs font-bold text-slate-400">
+                        ${state.emailStatus === 'success' ? '✅ Nota e imagen enviadas al correo' :
+                          state.emailStatus === 'error' ? '⚠️ Error al enviar nota e imagen' :
+                          '⏳ Enviando nota e imagen al correo...'}
+                    </p>
+                </div>`;
+            }
+        }
+        render();
+    </script>
+</body>
+</html>
